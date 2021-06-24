@@ -1,0 +1,19 @@
+#!/bin/bash
+
+USER='user1@gmail.com';
+
+DB_USER='debian';
+DB_PASSWD='debian';
+DB_NAME='projet_majeur';
+
+#transfert de la photo
+scp -i id $1 debian@server.danlah.ovh:/var/www/server.danlah.ovh/html/$1
+
+#ajout en bdd
+
+DATE=$(date +"%Y-%m-%d");
+TIME=$(date +"%T");
+
+ssh -i id debian@server.danlah.ovh 'mysql --user="debian" --password="debian" projet_majeur -e "INSERT INTO Alerte (date,id_user,time) VALUES ('"'"''$DATE''"'"',(SELECT id_user FROM User WHERE email='"'"''$USER''"'"'),'"'"''$TIME''"'"')"'
+ssh -i id debian@server.danlah.ovh 'mysql --user="debian" --password="debian" projet_majeur -e "INSERT INTO Photo (emplacement,id_alerte) VALUES ('"'"''$1''"'"',(SELECT id_alerte FROM Alerte WHERE time='"'"''$TIME''"'"'))"'
+
